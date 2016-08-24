@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eux
 
-source ./vagrant_add.sh
+scl enable sclo-vagrant1 'sh vagrant_add.sh'
 
 scl enable sclo-vagrant1 'vagrant up c6'
 scl enable sclo-vagrant1 'vagrant ssh c6 -c "uname -a"'
