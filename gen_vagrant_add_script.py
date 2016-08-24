@@ -56,5 +56,5 @@ if __name__ == '__main__':
     tasks = cbs_tasks(sys.argv[1])
     paths = [cbs_image_path(t) for t in tasks]
     urls = [cbs_image_url(p) for p in paths]
-    cmds = [cbs_image_download(u) for u in url]
+    cmds = [cbs_image_download(u) for u in urls]
     print('\n'.join(cmds))
