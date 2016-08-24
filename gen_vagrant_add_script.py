@@ -49,9 +49,9 @@ def cbs_image_download_command(image_url):
     if not match:
         raise RuntimeError('Unable to determine CentOS major release number')
     name = 'c{}'.format(match.group(1))
-    return ('curl --create-dirs -o box/{1}.img {0}\n'
-            'tar -czvf {1}.box -C box metadata.json Vagrantfile {1}.img\n'
-            'vagrant box add box/{1}.box --name {1}').format(image_url, name)
+    return ('curl -o {1}.img {0}\n'
+            'tar -czvf {1}.box metadata.json Vagrantfile {1}.img\n'
+            'vagrant box add {1}.box --name {1}').format(image_url, name)
 
 
 if __name__ == '__main__':
@@ -59,4 +59,4 @@ if __name__ == '__main__':
     paths = [cbs_image_path(t) for t in tasks]
     urls = [cbs_image_url(p) for p in paths]
     cmds = [cbs_image_download_command(u) for u in urls]
-    print('\n'.join(cmds))
+    print('cd box\n' + '\n'.join(cmds))
