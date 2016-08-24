@@ -24,7 +24,7 @@ def cbs_tasks(log_path):
 
 def cbs_image_path(task_id):
     """Return the filesystem path to a qcow2 image on cbs.centos.org"""
-    kvm_image_re = re.compile(r'\s*(.*centos-\d+-1-1\.[^.]+\.qcow2)')
+    kvm_image_re = re.compile(r'\s*(\S*centos-\d+-1-1\.x86_64\.rhevm\.ova)')
     p = subprocess.Popen(['cbs', 'taskinfo', '-r', task_id],
                          stdout=subprocess.PIPE)
     output = p.communicate()[0]
@@ -45,13 +45,11 @@ def cbs_image_url(image_path):
 
 def cbs_image_download_command(image_url):
     """Add a box specified by URL to Vagrant"""
-    match = re.search(r'centos-(\d+)-1-1\.[^.]+\.qcow2', image_url)
+    match = re.search(r'centos-(\d+)-1-1\.x86_64\.rhevm\.ova', image_url)
     if not match:
         raise RuntimeError('Unable to determine CentOS major release number')
     name = 'c{}'.format(match.group(1))
-    return ('curl -o box.img {0}\n'
-            'tar -czvf {1}.box metadata.json Vagrantfile box.img\n'
-            'vagrant box add {1}.box --name {1}').format(image_url, name)
+    return 'vagrant box add {} --name {}'.format(image_url, name)
 
 
 if __name__ == '__main__':
@@ -59,4 +57,4 @@ if __name__ == '__main__':
     paths = [cbs_image_path(t) for t in tasks]
     urls = [cbs_image_url(p) for p in paths]
     cmds = [cbs_image_download_command(u) for u in urls]
-    print('cd box\n' + '\n'.join(cmds))
+    print('\n'.join(cmds))
