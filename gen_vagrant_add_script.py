@@ -50,7 +50,7 @@ def cbs_image_download_command(image_url):
         raise RuntimeError('Unable to determine CentOS major release number')
     name = 'c{}'.format(match.group(1))
     return ('curl --create-dirs -o box/{1}.img {0}\n'
-            'tar -C box czvf {1}.box metadata.json Vagrantfile {1}.img\n'
+            'tar -czvf {1}.box -C box metadata.json Vagrantfile {1}.img\n'
             'vagrant box add box/{1}.box --name {1}').format(image_url, name)
 
 
