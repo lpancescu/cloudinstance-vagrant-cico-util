@@ -24,7 +24,7 @@ def cbs_tasks(log_path):
 
 def cbs_image_path(task_id):
     """Return the filesystem path to a qcow2 image on cbs.centos.org"""
-    kvm_image_re = r'\s*(.*centos-\d+-1-1\.[^.]+\.qcow2)'
+    kvm_image_re = re.compile(r'\s*(.*centos-\d+-1-1\.[^.]+\.qcow2)')
     p = subprocess.Popen(['cbs', 'taskinfo', '-r', task_id],
                          stdout=subprocess.PIPE)
     output = p.communicate()[0]
