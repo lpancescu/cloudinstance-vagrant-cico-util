@@ -4,7 +4,7 @@
 Vagrant.configure(2) do |config|
   config.vm.provider :libvirt do |domain|
     domain.memory = 1024
-    domain.cpu = 1
+    domain.cpus = 1
   end
 
   config.vm.define :c6, autostart: false do |c6|
