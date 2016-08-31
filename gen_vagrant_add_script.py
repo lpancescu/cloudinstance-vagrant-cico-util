@@ -5,6 +5,13 @@ import re
 import sys
 import subprocess
 
+image_re = {
+    'libvirt': re.compile(r'\s*(\S*centos-(\d+)-1-1'
+                          r'\.x86_64\.vagrant-libvirt\.box)'),
+    'virtualbox': re.compile(r'\s*(\S*centos-(\d+)-1-1'
+                             r'\.x86_64\.vagrant-virtualbox\.box)')
+    }
+
 
 def cbs_tasks(log_path):
     """Return a list of CBS task ids
@@ -22,17 +29,16 @@ def cbs_tasks(log_path):
     return tasks
 
 
-def cbs_image_path(task_id):
-    """Return the filesystem path to a qcow2 image on cbs.centos.org"""
-    kvm_image_re = re.compile(r'\s*(\S*centos-\d+-1-1\.x86_64\.rhevm\.ova)')
+def cbs_image_path(task_id, provider):
+    """Return the filesystem path to the image on cbs.centos.org"""
     p = subprocess.Popen(['cbs', 'taskinfo', '-r', task_id],
                          stdout=subprocess.PIPE)
     output = p.communicate()[0]
     for line in output.splitlines():
-        match = kvm_image_re.match(line)
+        match = image_re[provider].match(line)
         if match:
             return match.group(1)
-    raise RuntimeError('Vagrant image for libvirt-kvm not found')
+    raise RuntimeError('Vagrant image for {} not found'.format(provider))
 
 
 def cbs_image_url(image_path):
@@ -43,18 +49,19 @@ def cbs_image_url(image_path):
     raise RuntimeError('Image path in an unexpected directory')
 
 
-def cbs_image_download_command(image_url):
+def cbs_image_download_command(image_url, provider):
     """Add a box specified by URL to Vagrant"""
-    match = re.search(r'centos-(\d+)-1-1\.x86_64\.rhevm\.ova', image_url)
+    match = image_re[provider].match(image_url)
     if not match:
         raise RuntimeError('Unable to determine CentOS major release number')
-    name = 'c{}'.format(match.group(1))
+    name = 'c{}'.format(match.group(2))
     return 'vagrant box add {} --name {}'.format(image_url, name)
 
 
 if __name__ == '__main__':
     tasks = cbs_tasks(sys.argv[1])
-    paths = [cbs_image_path(t) for t in tasks]
-    urls = [cbs_image_url(p) for p in paths]
-    cmds = [cbs_image_download_command(u) for u in urls]
-    print('\n'.join(cmds))
+    for provider in 'libvirt', 'virtualbox':
+        paths = [cbs_image_path(t, provider) for t in tasks]
+        urls = [cbs_image_url(p) for p in paths]
+        cmds = [cbs_image_download_command(u, provider) for u in urls]
+        print('\n'.join(cmds))
