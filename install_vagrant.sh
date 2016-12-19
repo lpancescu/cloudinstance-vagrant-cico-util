@@ -7,4 +7,6 @@ curl -O http://download.virtualbox.org/virtualbox/5.0.30/VirtualBox-5.0-5.0.30_1
 curl https://www.virtualbox.org/download/hashes/5.0.30/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
 yum -y install VirtualBox-5.0-5.0.30_112061_el7-1.x86_64.rpm
 yum -y install gcc make kernel-devel-$(uname -r)
+yum -y install rh-ruby22-ruby-devel gcc-c++ zlib-devel libvirt-devel
+scl enable sclo-vagrant1 'vagrant plugin install vagrant-vbguest'
 systemctl start libvirtd.service
