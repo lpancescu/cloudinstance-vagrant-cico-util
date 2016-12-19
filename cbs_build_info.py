@@ -12,19 +12,37 @@ image_re = {
     'virtualbox': re.compile(r'\s*(\S*centos-(\d+)-1-1'
                              r'\.x86_64\.vagrant-virtualbox\.box)')
     }
+created_task_re = re.compile(r'Created task: (\d+)')
+successful_task_re = re.compile(r'(\d+) image.*completed successfully')
 
 
-def cbs_tasks():
-    """Return a list of CBS task ids"""
-    tasks = []
-    task_re = re.compile(r'Created task: (\d+)')
-    for line in sys.stdin:
-        match = task_re.match(line)
+class FailedTasksError(RuntimeError):
+    def __init__(self, failed_tasks):
+        self.failed_tasks = failed_tasks
+    def __str__(self):
+        return ','.join(self.failed_tasks)
+
+
+def cbs_tasks(cbs_log):
+    """Return a set of successfully completed CBS task ids
+
+    The cbs_log argument should be a file-like object containing the output of
+    "cbs image-build". If there was any task that didn't complete successfully,
+    a FailedTasksError exception is raised.
+    """
+    created_tasks = set()
+    successful_tasks = set()
+    for line in cbs_log:
+        match = created_task_re.match(line)
         if match:
-            tasks.append(match.group(1))
-    if len(tasks):
-        return tasks
-    raise RuntimeError("No CBS tasks found")
+            created_tasks.add(match.group(1))
+        match = successful_task_re.match(line)
+        if match:
+            successful_tasks.add(match.group(1))
+    failed_tasks = created_tasks - successful_tasks
+    if len(failed_tasks):
+        raise FailedTasksError(failed_tasks)
+    return successful_tasks
 
 
 def cbs_image_url(image_path):
@@ -53,11 +71,9 @@ def cbs_images(task_id):
 
 if __name__ == '__main__':
     images = []
-    tasks = cbs_tasks()
+    tasks = cbs_tasks(sys.stdin)
     for task in tasks:
         images.extend(cbs_images(task))
-    if len(images):
-        print("BUILD_INFO={}".format(json.dumps(images)))
-    else:
-        print("No images found", file=sys.stderr)
-        sys.exit(1)
+    if not images:
+        raise RuntimeError("No images found")
+    print("BUILD_INFO={}".format(json.dumps(images)))
