@@ -54,6 +54,7 @@ scl enable sclo-vagrant1 'vagrant plugin install vagrant-vbguest'
     test_provider(images, 'virtualbox')
 
     print("""
+service vboxdrv stop
 yum -y remove VirtualBox-5.0
 curl -O http://download.virtualbox.org/virtualbox/5.1.12/VirtualBox-5.1-5.1.12_112440_el7-1.x86_64.rpm
 curl https://www.virtualbox.org/download/hashes/5.1.12/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
