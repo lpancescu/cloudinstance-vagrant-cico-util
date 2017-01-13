@@ -45,7 +45,7 @@ yum -y install VirtualBox-5.0-5.0.30_112061_el7-1.x86_64.rpm
 /sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
 """)
 
-    if sys.argv == 2 and sys.argv[1] == '--with-vagrant-vbguest':
+    if len(sys.argv) == 2 and sys.argv[1] == '--with-vagrant-vbguest':
         print("""
 yum -y install rh-ruby22-ruby-devel gcc-c++ zlib-devel libvirt-devel
 scl enable sclo-vagrant1 'vagrant plugin install vagrant-vbguest'
