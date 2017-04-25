@@ -19,9 +19,9 @@ modprobe -r -v kvm_intel kvm_amd kvm
 
 # VirtualBox needs to compile its kernel modules
 yum -y install gcc make kernel-devel-$(uname -r)
-curl -O http://download.virtualbox.org/virtualbox/5.0.30/VirtualBox-5.0-5.0.30_112061_el7-1.x86_64.rpm
-curl https://www.virtualbox.org/download/hashes/5.0.30/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
-yum -y install VirtualBox-5.0-5.0.30_112061_el7-1.x86_64.rpm
+curl -O http://download.virtualbox.org/virtualbox/5.0.38/VirtualBox-5.0-5.0.38_114632_el7-1.x86_64.rpm
+curl https://www.virtualbox.org/download/hashes/5.0.38/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
+yum -y install VirtualBox-5.0-5.0.38_114632_el7-1.x86_64.rpm
 
 /sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
 
@@ -41,9 +41,9 @@ scl enable sclo-vagrant1 'vagrant destroy c{{ rel }} -f'
 sleep 10
 service vboxdrv stop
 yum -y remove VirtualBox-5.0
-curl -O http://download.virtualbox.org/virtualbox/5.1.12/VirtualBox-5.1-5.1.12_112440_el7-1.x86_64.rpm
-curl https://www.virtualbox.org/download/hashes/5.1.12/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
-yum -y install VirtualBox-5.1-5.1.12_112440_el7-1.x86_64.rpm
+curl -O http://download.virtualbox.org/virtualbox/5.1.20/VirtualBox-5.1-5.1.20_114628_el7-1.x86_64.rpm
+curl https://www.virtualbox.org/download/hashes/5.1.20/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
+yum -y install VirtualBox-5.1-5.1.20_114628_el7-1.x86_64.rpm
 /sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
 
 {% for rel in images | selectattr('provider', 'equalto', 'virtualbox')
