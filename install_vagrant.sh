@@ -1,4 +1,4 @@
 #!/bin/sh
-yum -y install centos-release-scl
-yum -y install sclo-vagrant1 qemu-kvm rsync
+yum -y install qemu-kvm rsync
+yum -y install https://releases.hashicorp.com/vagrant/1.9.4/vagrant_1.9.4_x86_64.rpm
 systemctl start libvirtd.service

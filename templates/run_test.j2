@@ -1,16 +1,16 @@
 #!/bin/sh
 set -eux
 
-scl enable sclo-vagrant1 'sh vagrant_add.sh'
+sh vagrant_add.sh
 
 cd box
 
 {% for rel in images | selectattr('provider', 'equalto', 'libvirt')
                      | map(attribute='major_release')
                      | sort %}
-scl enable sclo-vagrant1 'vagrant up c{{ rel }} --provider libvirt'
-scl enable sclo-vagrant1 'vagrant ssh c{{ rel }} -c "uname -a"'
-scl enable sclo-vagrant1 'vagrant destroy c{{ rel }} -f'
+vagrant up c{{ rel }} --provider libvirt
+vagrant ssh c{{ rel }} -c "uname -a"
+vagrant destroy c{{ rel }} -f
 {% endfor %}
 
 # VirtualBox doesn't support nested virtualization
@@ -19,37 +19,31 @@ modprobe -r -v kvm_intel kvm_amd kvm
 
 # VirtualBox needs to compile its kernel modules
 yum -y install gcc make kernel-devel-$(uname -r)
-curl -O http://download.virtualbox.org/virtualbox/5.0.38/VirtualBox-5.0-5.0.38_114632_el7-1.x86_64.rpm
-curl https://www.virtualbox.org/download/hashes/5.0.38/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
-yum -y install VirtualBox-5.0-5.0.38_114632_el7-1.x86_64.rpm
-
-/sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
-
-{% if with_vbguest %}
-yum -y install rh-ruby22-ruby-devel gcc-c++ zlib-devel libvirt-devel
-scl enable sclo-vagrant1 'vagrant plugin install vagrant-vbguest'
-{% endif %}
-
-{% for rel in images | selectattr('provider', 'equalto', 'virtualbox')
-                     | map(attribute='major_release')
-                     | sort %}
-scl enable sclo-vagrant1 'vagrant up c{{ rel }} --provider virtualbox'
-scl enable sclo-vagrant1 'vagrant ssh c{{ rel }} -c "uname -a"'
-scl enable sclo-vagrant1 'vagrant destroy c{{ rel }} -f'
-{% endfor %}
-
-sleep 10
-service vboxdrv stop
-yum -y remove VirtualBox-5.0
 curl -O http://download.virtualbox.org/virtualbox/5.1.20/VirtualBox-5.1-5.1.20_114628_el7-1.x86_64.rpm
 curl https://www.virtualbox.org/download/hashes/5.1.20/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
 yum -y install VirtualBox-5.1-5.1.20_114628_el7-1.x86_64.rpm
 /sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
 
+/sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
+
+{% if with_vbguest %}
+yum -y install rh-ruby22-ruby-devel gcc-c++ zlib-devel libvirt-devel
+vagrant plugin install vagrant-vbguest
+{% endif %}
+
 {% for rel in images | selectattr('provider', 'equalto', 'virtualbox')
                      | map(attribute='major_release')
                      | sort %}
-scl enable sclo-vagrant1 'vagrant up c{{ rel }} --provider virtualbox'
-scl enable sclo-vagrant1 'vagrant ssh c{{ rel }} -c "uname -a"'
-scl enable sclo-vagrant1 'vagrant destroy c{{ rel }} -f'
+vagrant up c{{ rel }} --provider virtualbox
+vagrant ssh c{{ rel }} -c "uname -a"
+vagrant destroy c{{ rel }} -f
+{% endfor %}
+
+
+{% for rel in images | selectattr('provider', 'equalto', 'virtualbox')
+                     | map(attribute='major_release')
+                     | sort %}
+vagrant up c{{ rel }} --provider virtualbox
+vagrant ssh c{{ rel }} -c "uname -a"
+vagrant destroy c{{ rel }} -f
 {% endfor %}
