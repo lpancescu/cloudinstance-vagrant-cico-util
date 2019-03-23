@@ -19,10 +19,9 @@ modprobe -r -v kvm_intel kvm_amd kvm
 
 # VirtualBox needs to compile its kernel modules
 yum -y install gcc make kernel-devel-$(uname -r)
-curl -O http://download.virtualbox.org/virtualbox/5.1.20/VirtualBox-5.1-5.1.20_114628_el7-1.x86_64.rpm
-curl https://www.virtualbox.org/download/hashes/5.1.20/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
-yum -y install VirtualBox-5.1-5.1.20_114628_el7-1.x86_64.rpm
-/sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
+curl -O https://download.virtualbox.org/virtualbox/6.0.4/VirtualBox-6.0-6.0.4_128413_el7-1.x86_64.rpm
+curl https://www.virtualbox.org/download/hashes/6.0.4/SHA256SUMS | grep 'el7-1\.x86_64\.rpm$' | sha256sum -c -
+yum -y install VirtualBox-6.0-6.0.4_128413_el7-1.x86_64.rpm
 
 /sbin/rcvboxdrv setup # build and load the VirtualBox kernel modules
 
